@@ -27,27 +27,29 @@
             android:id="@+id/addtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Wprowadź tytuł filmu"
+            android:hint="Tytuł"
             android:layout_gravity="center"/>
 
         <EditText
             android:id="@+id/addgenre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Wprowadź gatunek"
+            android:hint="Gatunek"
             android:layout_gravity="center"/>
 
         <EditText
             android:id="@+id/addreview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Wprowadź recenzje filmu/opis" />
+            android:hint="Recenzja/opis" />
 
         <SeekBar
             android:id="@+id/addrating"
-            android:max="10"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:min="1"
+            android:max="10"
+            />
 
         <Button
             android:id="@+id/addnew"
