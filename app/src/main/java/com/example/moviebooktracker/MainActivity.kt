@@ -1,44 +1,108 @@
 package com.example.moviebooktracker
 
+import android.app.AlertDialog
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.SeekBar
-import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
+
+data class MediaItem(
+    val title: String,
+    val genre: String,
+    val review: String,
+    val rating: Int,
+    val type: String, // "Book" or "Movie"
+    var isCompleted: Boolean = false
+)
 
 class MainActivity : AppCompatActivity() {
+    private val mediaList = mutableListOf<MediaItem>()
+    private lateinit var adapter: MediaAdapter
+    private val gson = Gson()
+    private val dataFileName = "media_data.json"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-        val title = findViewById<TextView>(R.id.title)
-        val addtitle = findViewById<EditText>(R.id.addtitle)
-        val addgenre = findViewById<EditText>(R.id.addgenre)
-        val add = findViewById<EditText>(R.id.addreview)
-        val addrating = findViewById<SeekBar>(R.id.addrating)
-        val addnew = findViewById<Button>(R.id.addnew)
-        val movieorbook = findViewById<RadioGroup>(R.id.movieorbook)
 
-        movieorbook.setOnCheckedChangeListener{_, isChecked ->
-            val radioButton = findViewById<RadioButton>(isChecked)
-            title.text = radioButton.text.toString()
-        }
+        val titleInput = findViewById<EditText>(R.id.inputTitle)
+        val genreInput = findViewById<EditText>(R.id.inputGenre)
+        val reviewInput = findViewById<EditText>(R.id.inputReview)
+        val ratingSeekBar = findViewById<SeekBar>(R.id.seekBarRating)
+        val typeRadioGroup = findViewById<RadioGroup>(R.id.radioGroupType)
+        val addButton = findViewById<Button>(R.id.buttonAdd)
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewMedia)
 
-        addnew.setOnClickListener{_, ->
-            Toast.makeText(this, "Wypełnij dobrze wszystkie pola!", Toast.LENGTH_SHORT).show()
-        }
+        loadMediaData()
 
+        adapter = MediaAdapter(mediaList) { item -> showDetailsDialog(item) }
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
+
+        addButton.setOnClickListener {
+            val title = titleInput.text.toString()
+            val genre = genreInput.text.toString()
+            val review = reviewInput.text.toString()
+            val rating = ratingSeekBar.progress
+            val selectedTypeId = typeRadioGroup.checkedRadioButtonId
+            val type = if (selectedTypeId == R.id.radioButtonBook) "Book" else "Movie"
+
+            if (title.isNotBlank() && genre.isNotBlank() && review.isNotBlank()) {
+                val newItem = MediaItem(title, genre, review, rating, type)
+                mediaList.add(newItem)
+                adapter.notifyDataSetChanged()
+                saveMediaData()
+                titleInput.text.clear()
+                genreInput.text.clear()
+                reviewInput.text.clear()
+                ratingSeekBar.progress = 0
+            } else {
+                Toast.makeText(this, "Wypełnij wszystkie pola!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun showDetailsDialog(item: MediaItem) {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(item.title)
+            .setMessage("""
+                Gatunek: ${item.genre}
+                Recenzja: ${item.review}
+                Ocena: ${item.rating}
+                Typ: ${item.type}
+                Ukończono: ${if (item.isCompleted) "Tak" else "Nie"}
+            """.trimIndent())
+            .setPositiveButton("Zamknij", null)
+            .setNeutralButton("Zmień status") { _, _ ->
+                item.isCompleted = !item.isCompleted
+                adapter.notifyDataSetChanged()
+                saveMediaData()
+            }
+            .create()
+        dialog.show()
+    }
+
+    private fun loadMediaData() {
+        val file = File(filesDir, dataFileName)
+        if (file.exists()) {
+            val type = object : TypeToken<List<MediaItem>>() {}.type
+            val reader = FileReader(file)
+            val items: List<MediaItem> = gson.fromJson(reader, type)
+            mediaList.addAll(items)
+            reader.close()
+        }
+    }
+
+    private fun saveMediaData() {
+        val file = File(filesDir, dataFileName)
+        val writer = FileWriter(file)
+        gson.toJson(mediaList, writer)
+        writer.close()
     }
 }

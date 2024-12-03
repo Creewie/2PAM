@@ -1,97 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
     android:orientation="vertical"
-    android:layout_gravity="center"
-    android:gravity="center"
-    >
+    android:padding="16dp">
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/inputTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tytuł" />
+
+    <EditText
+        android:id="@+id/inputGenre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Gatunek" />
+
+    <EditText
+        android:id="@+id/inputReview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Recenzja" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center"
-        android:gravity="center"
-        >
+        android:text="Ocena (1-10)" />
+    <SeekBar
+        android:id="@+id/seekBarRating"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="10" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Movie/Book Tracker"
-            android:textSize="30dp"
-            android:id="@+id/title"
-            android:layout_gravity="center"/>
-
-        <EditText
-            android:id="@+id/addtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Tytuł"
-            android:layout_gravity="center"/>
-
-        <EditText
-            android:id="@+id/addgenre"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Gatunek"
-            android:layout_gravity="center"/>
-
-        <EditText
-            android:id="@+id/addreview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Recenzja/opis" />
-
-
-        <SeekBar
-            android:id="@+id/addrating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="200dp"
-            android:min="1"
-            android:max="10"
-            />
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/movieorbook"
-            android:orientation="horizontal"
-            android:gravity="center"
-            >
+    <RadioGroup
+        android:id="@+id/radioGroupType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/book"
-            android:text="Film"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <RadioButton
-            android:id="@+id/movie"
-            android:text="Książka"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        </RadioGroup>
-
-        <Button
-            android:id="@+id/addnew"
+            android:id="@+id/radioButtonBook"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Dodaj"
-            />
-    </LinearLayout>
+            android:text="Książka" />
+
+        <RadioButton
+            android:id="@+id/radioButtonMovie"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Film" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/buttonAdd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dodaj element" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-
-
+        android:id="@+id/recyclerViewMedia"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 </LinearLayout>
