@@ -2,6 +2,7 @@ package com.example.moviebooktracker
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +18,7 @@ data class MediaItem(
     val genre: String,
     val review: String,
     val rating: Int,
-    val type: String, // "Book" or "Movie"
+    val type: String,
     var isCompleted: Boolean = false
 )
 
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         addButton.setOnClickListener {
+            Toast.makeText(this, dataDir.path, Toast.LENGTH_SHORT).show()
             val title = titleInput.text.toString()
             val genre = genreInput.text.toString()
             val review = reviewInput.text.toString()
@@ -84,8 +86,25 @@ class MainActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
                 saveMediaData()
             }
+            .setNegativeButton("Usuń") { _, _ ->
+                showDeleteConfirmationDialog(item)
+            }
             .create()
         dialog.show()
+    }
+
+    private fun showDeleteConfirmationDialog(item: MediaItem) {
+        AlertDialog.Builder(this)
+            .setTitle("Potwierdzenie usunięcia")
+            .setMessage("Czy na pewno chcesz usunąć '${item.title}'?")
+            .setPositiveButton("Tak") { _, _ ->
+                mediaList.remove(item)
+                adapter.notifyDataSetChanged()
+                saveMediaData()
+                Toast.makeText(this, "Usunięto pomyślnie", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Nie", null)
+            .show()
     }
 
     private fun loadMediaData() {
